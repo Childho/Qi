@@ -1,0 +1,34 @@
+{
+  "_readme": "MCP 服务器配置模板。格式为 ZCode 风格（mcp.servers），各 harness 配置格式不同，由执行安装的 AI 按所在 harness 转换。所有 <本地填写：…> 占位符在安装时写入本机配置，密钥绝不写回本仓库。",
+  "mcp": {
+    "servers": {
+      "MiniMax": {
+        "_note": "Minimax 编码计划 MCP。command 通常为 uvx（本机若需绝对路径请自行调整）。enabled:false 表示默认停用，需要时改 true。",
+        "command": "uvx",
+        "args": ["minimax-coding-plan-mcp"],
+        "env": {
+          "MINIMAX_API_KEY": "<本地填写：你的 MiniMax API Key>",
+          "MINIMAX_API_HOST": "https://api.minimax.cn"
+        },
+        "enabled": false
+      },
+      "MiniMax-Media": {
+        "_note": "Minimax 媒体生成 MCP（语音/图像/视频）。",
+        "command": "uvx",
+        "args": ["minimax-mcp"],
+        "timeoutMs": 120000,
+        "env": {
+          "MINIMAX_API_KEY": "<本地填写：你的 MiniMax API Key>",
+          "MINIMAX_API_HOST": "https://api.minimax.cn",
+          "MINIMAX_MCP_BASE_PATH": "<本地填写：媒体输出目录，如 ~/.zcode/minimax-output>",
+          "MINIMAX_API_RESOURCE_MODE": "local"
+        }
+      },
+      "rea": {
+        "_note": "逆向工程分析套件，版本固定 6.5.0。Windows 用下方 cmd 形式；macOS/Linux 等效为 command=npx, args=[\"-y\",\"rea-agents@6.5.0\",\"mcp\"]。",
+        "command": "cmd.exe",
+        "args": ["/d", "/c", "npx", "-y", "rea-agents@6.5.0", "mcp"]
+      }
+    }
+  }
+}

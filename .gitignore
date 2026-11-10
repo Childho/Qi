@@ -1,0 +1,12 @@
+# 本地工作目录（issue tracker，见 docs/agents/issue-tracker.md）
+.scratch/
+
+# 密钥与本地覆盖（永不入库）
+*.local.*
+.env
+.env.*
+
+# 临时与系统文件
+tmp/
+Thumbs.db
+.DS_Store
