@@ -6,7 +6,7 @@
 
 ## 新机器怎么用（3 步）
 
-1. `git clone https://github.com/<你的用户名>/Qi`（任何位置）
+1. `git clone https://github.com/Childho/Qi`（任何位置）
 2. 对你正在用的 AI 工具说：
    > 阅读 `<克隆路径>/SETUP.md`，按它的说明把我的环境配置好。
 3. 按提示补填 API key（密钥只进本机，永不入库）。
