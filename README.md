@@ -21,6 +21,7 @@
 | `third-party.md` | 第三方 skills 进货单（来源 + 版本，内容不入库） |
 | `mcp/mcp.template.json` | MCP 配置模板（密钥一律占位符） |
 | `tools/` | 平台参考脚本（如 Windows 安装脚本） |
+| `docs/workflows.md` | 我的工作流手册（skills 使用心得与场景速查） |
 | `docs/agents/` | 本仓库的 agent 工作约定 |
 
 ## 维护规则
