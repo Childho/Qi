@@ -1,0 +1,37 @@
+{
+  "name": "@local/karlo-calm",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-theme"
+      ]
+    },
+    "compatibility": {
+      "dshReleases": {
+        "0.2.2-rc.5": "compatible"
+      },
+      "note": "0.2.2-rc.5 为 Desktop 内嵌运行时已验证。宿主升级后请重新验收并在新 DSH 版本上验收后再追加记录。"
+    }
+  }
+}

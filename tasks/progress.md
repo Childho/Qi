@@ -8,7 +8,14 @@
 - **提交 a178886**：用户提交白名单（全部为第三方，无一自有 skill → 全部进进货单，`skills/` 留空）。进货单扩为 7 组：anthropics 官方（四件套+frontend-design）、设计类 3 个、mattpocock 全集、neat-freak、Superpowers 精选 4 个。WebSearch 查证两个存疑来源：obra/superpowers、nutlope/hallmark（=本机 impeccable）。用户工作流心得原文沉淀至 docs/workflows.md。
 - **提交 a7391db + 上线**：`gh` CLI 不在 Git Bash PATH，实际装于 `$LOCALAPPDATA/Programs/GitHub CLI/bin/`；gh keyring 在非交互会话超时 → 改从 Git Credential Manager 取 token（不回显）注入 `GH_TOKEN` 绕过 keyring，`gh repo create` 建公开仓库并推送 main 成功。
 
+## 2026-11-21 · DSH 插件模块上线
+
+- **grilling 两轮 9 项决策**（见 todo.md）：确立"分布开发 + 定期回流"模式——插件在各项目开发装进 profile，Qi 是归档；这与 skills 的"不回流"不同，是首个有双向同步的模块。
+- **事实探查**：本机 DSH 0.2.2-rc.5；desktop profile 显式安装 2 个插件——`@local/karlo-calm`（link 安装，母本在 `Documents\deepseek-harness\default-workspace\karlo-calm-theme`）与 `@tencent-connect/dsh-qqbot@0.5.5`（npm）；web profile 空。同步识别信号 = profile `package.json` 的 `dsh.profile.bundles`。
+- **落地**：母本 package.json 补 `dsh.compatibility.dshReleases`（0.2.2-rc.5 compatible，防回流丢字段）；源码拷入 `plugins/karlo-calm/`（7 文件 SHA256 逐一比对一致，JSON 全部解析通过）；`plugins/third-party.md` 记 qqbot 进货单；SETUP.md 插入第 5 步（仅 DSH，install_bundle / UI Add plugin 双路径）、自检加插件项、月度流程挂载《插件同步流程》新节（profile→Qi 回流、新插件待审、项目侧覆盖）；README 结构图与维护规则同步；.gitignore 排除 `plugins/**/node_modules/`。
+- **验证边界**：未从 Qi 目录实际 `install_bundle` 重装 karlo-calm（会覆盖现有 link 安装，动用户开发态）；其可安装性由"与运行中母本逐字节一致"传递。列入 todo 待装机表验。
+
 ## 当前状态
 
-- 远端 https://github.com/Childho/Qi ，main 与本地一致，工作区干净。
-- 未做：新机器表验、月度定时任务建立（见 todo.md）。
+- 远端 https://github.com/Childho/Qi ，插件模块改动**未提交推送**（待用户审阅后提交）。
+- 未做：新机器表验、月度定时任务建立、插件同步/装机首跑（见 todo.md）。

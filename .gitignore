@@ -10,3 +10,6 @@
 tmp/
 Thumbs.db
 .DS_Store
+
+# 插件包的本地依赖（DSH 插件源码入库，依赖不入库）
+plugins/**/node_modules/
