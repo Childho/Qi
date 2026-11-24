@@ -22,8 +22,21 @@
 - **落地**：`prompts/README.md`（收录规则+条目模板，空库无示例）；根 README 结构图加 `prompts/` 行、维护规则加"提示词"豁免条；根 AGENTS.md 加 Prompt library 指路小节（agent 消费入口）。未动 SETUP.md（非安装项）、不涉及进货单。
 - **验证边界**：纯文档模块无运行态可验证；首次实际收录（用户存入第一条）即首次使用验证。
 
+## 2026-11-21 · Dashboard 模块（可视化资产面板）
+
+- **grilling 两轮 11 问**（见 todo.md）：原始命题"DSH 插件工作面板"被用户回答推翻（真实诉求 = 只要 dashboard，载体不限）→ ADR-0001 静态快照方案。
+- **落地**：`docs/adr/0001-dashboard-static-snapshot.md`；`tools/build-dashboard.py`（标准库：七板块采集 + 两份进货单 markdown 解析 + git 时间健康视角）；生成 `dashboard.html`（14.6 KB，gitignore 排除）；SETUP.md 月度流程挂第 7 步重生成；README 结构表 tools/ 行同步。
+- **验证**：数据层断言全过——7 板块、名称行 28 = 14（第三方 skills）+1+1+9（prompts）+3（MCP）精确对账；修复 3 个解析 bug（表头行混入、来源 URL 被二次切冒号、名称反引号/括号剥离过度）。Edge 无头截图被 DSH 沙箱 Crashpad 拦截，**视觉验收待用户双击确认**（todo 已列）。
+- **UI 两轮迭代**：一轮按用户 KARLO 设计哲学（让复杂，安静下来）重写渲染层——纸墨色系（A 自然编辑 / C 深邃沉静）、衬线标题 + 等宽元数据、细线秩序无卡片盒、编辑式信息去重；二轮按用户反馈（层级弱 / 要折叠跳转 / 排版乱）落地：全部描述单行截断悬停看全文、章节默认收起 + 点击展开（localStorage 记忆、noscript 兜底）、目录吸顶跳转 + IntersectionObserver 当前高亮。数据层零改动（28 名称行对账不变）。三轮反馈（外链点了不跳）：外链一律 `target="_blank"` 新标签打开（file:// 同标签导航可能被浏览器策略拦截，且会丢面板状态），并补齐 qqbot 来源链接。四轮反馈（提示词模块无实用性）：每条 prompt 增加「复制」按钮，复制 README 约定的分隔线以下复制区正文，clipboard API + execCommand 双通道。五轮反馈（复制按钮无生效）：按 diagnosing-bugs 纪律建 Node shim 回路（`.scratch/cp-loop.js`，可重跑），初版回路三模式 GREEN 误判逻辑无罪——后经用户复测三态反馈（已复制✓/粘贴为空）钉死根因：**`<template>.textContent` 恒为空**（子节点在 `.content` DocumentFragment 里），`writeText('')` 合法 resolve → 按钮如实报成功但剪贴板为空。修复：正文改从 `template.content.textContent` 取（含退化路径）。升级 shim 复现真实 template 语义后，旧代码 RED 复现用户精确症状、新代码三模式 GREEN，红→绿闭环。同时保留上轮加固：QI_COPY 独立全局函数 + onclick 直绑、fallback 补 focus()、`window.onerror` 错误横幅。视觉自查受限：Edge 无头截图被环境 Crashpad ACL 拦截（三变体均失败），视觉验收靠用户亲眼确认。
+- **修正过期事实**：prompts 实为 9 条且已由用户陆续提交（此前记录"空库起步"过期，下方当前状态已更新）。
+
 ## 当前状态
 
-- 远端 https://github.com/Childho/Qi ，插件模块 8bd9ee5 已推送；提示词模块随本批提交推送。
-- `prompts/` 空库起步，首条待用户自行存入。
+- 2026-11-24：重做资产面板。首屏汇总仓库资产并展示分布，清单支持宽窄屏阅读和吸顶跳转。修复直接访问章节链接仍处于折叠状态、折叠内容仍可被键盘聚焦的问题。
+- 2026-11-24：浏览器本地文件模式验收通过。覆盖 320–1440 像素布局、明暗模式、键盘跳转、折叠记忆、无网络及禁用脚本阅读。复制的主路径、回退及失败提示通过浏览器拦截核对，系统剪贴板未写入。此前的 `.scratch/cp-loop.js` 对应旧版复制实现。
+
+- 2026-11-24：按用户确认，资产面板新增「核心提示词」，直接读取唯一母版 `global/AGENTS.md`，用于查看、复制和换机恢复；不读取或覆盖本机工具配置。
+
+- 远端 https://github.com/Childho/Qi ；`prompts/` 已收录 9 条（用户陆续提交推送）；dashboard 模块（ADR + 生成器）随本批提交。
+- `skills/` 仍为空（无自研 skill，正常）。
 - 未做：新机器表验、月度定时任务建立、插件同步/装机首跑（见 todo.md）。

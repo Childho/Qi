@@ -11,6 +11,8 @@
 | `docx` / `pdf` / `pptx` / `xlsx` | 办公四件套 |
 | `frontend-design` | 最好的前端设计工具 |
 
+技能目录：https://github.com/anthropics/skills/tree/main/skills
+
 ## 设计类
 
 | skill | 来源 | 用途 |

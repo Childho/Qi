@@ -13,3 +13,9 @@ Thumbs.db
 
 # 插件包的本地依赖（DSH 插件源码入库，依赖不入库）
 plugins/**/node_modules/
+
+# dashboard 生成物（tools/build-dashboard.py 随时重生成，见 docs/adr/0001）
+dashboard.html
+
+# Python 字节码缓存
+__pycache__/

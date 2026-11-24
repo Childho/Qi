@@ -16,16 +16,20 @@
 | 路径 | 作用 |
 |---|---|
 | `SETUP.md` | 给 AI 的安装指令（唯一真源） |
-| `global/AGENTS.md` | 全局指令母版（沟通与工作方式约定） |
+| `global/AGENTS.md` | 用户级通用全局指令的唯一母版，换机恢复时使用；资产面板的「核心提示词」可查看和复制 |
 | `skills/` | 我自己的 skills。**目录即收录清单**：在即收录，不在即未收录 |
 | `plugins/` | 我自己的 DeepSeek Harness（DSH）插件包源码。**目录即收录清单**，同 `skills/`。安装见 SETUP.md 第 5 步 |
 | `plugins/third-party.md` | DSH 第三方插件进货单（来源 + 版本 + 已验证 DSH 版本，内容不入库） |
 | `third-party.md` | 第三方 skills 进货单（来源 + 版本，内容不入库） |
 | `prompts/` | 我常用的提示词收藏（纯文本）。**目录即收录清单**，一条一文件，规则见 [prompts/README.md](prompts/README.md) |
 | `mcp/mcp.template.json` | MCP 配置模板（密钥一律占位符） |
-| `tools/` | 平台参考脚本（如 Windows 安装脚本） |
+| `tools/` | 平台参考脚本（如 Windows 安装脚本）与 dashboard 生成器（`build-dashboard.py` 扫描仓库生成根目录 `dashboard.html` 资产面板，生成物不入库） |
 | `docs/workflows.md` | 我的工作流手册（skills 使用心得与场景速查） |
 | `docs/agents/` | 本仓库的 agent 工作约定 |
+
+## 查看资产面板
+
+在仓库根目录运行 `python tools/build-dashboard.py`，然后双击 `dashboard.html`。首屏按类型汇总仓库资产，快捷目录可跳到各类清单，常用提示词可直接复制，核心提示词可展开查看或复制。
 
 ## 维护规则
 
