@@ -34,6 +34,12 @@ REPO = Path(__file__).resolve().parent.parent
 OUT = REPO / "dashboard.html"
 PLACEHOLDER = "<本地填写"
 
+# 独立仓库插件的母本地址（与 SETUP.md《插件同步流程》第 3 步一致）。
+# 归档目录须与上游逐字节一致，不能往里加文件，故 Qi 侧在此记录。
+INDEPENDENT_PLUGIN_SOURCES = {
+    "zcode-tempo": "https://github.com/Childho/zcode-tempo",
+}
+
 
 # ---------- 基础工具 ----------
 
@@ -202,7 +208,8 @@ def collect_own_plugins() -> tuple[list[dict], datetime | None]:
             name, desc = read_readme_summary(d)
             meta_str = "独立插件包"
         t = git_last_commit(f"plugins/{d.name}")
-        items.append({"name": name, "desc": desc, "meta": meta_str, "when": t})
+        items.append({"name": name, "desc": desc, "meta": meta_str,
+                      "src": INDEPENDENT_PLUGIN_SOURCES.get(d.name, ""), "when": t})
         latest = max(latest, t) if latest and t else (t or latest)
     return items, latest
 
@@ -749,7 +756,7 @@ def render() -> str:
     )
     plugins_body = table_html(
         ["名称", "简介", "版本", "最后变更"],
-        [f'<tr><td class="name mono">{escape(i["name"])}</td>{desc_cell(i["desc"])}'
+        [f'<tr><td class="name mono">{escape(i["name"])}{tpp_src_line(i["src"])}</td>{desc_cell(i["desc"])}'
          f'{meta_cell(i["meta"], "版本")}{when_cell(i["when"])}</tr>'
          for i in plugins],
     )
