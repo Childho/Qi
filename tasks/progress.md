@@ -30,8 +30,16 @@
 - **UI 两轮迭代**：一轮按用户 KARLO 设计哲学（让复杂，安静下来）重写渲染层——纸墨色系（A 自然编辑 / C 深邃沉静）、衬线标题 + 等宽元数据、细线秩序无卡片盒、编辑式信息去重；二轮按用户反馈（层级弱 / 要折叠跳转 / 排版乱）落地：全部描述单行截断悬停看全文、章节默认收起 + 点击展开（localStorage 记忆、noscript 兜底）、目录吸顶跳转 + IntersectionObserver 当前高亮。数据层零改动（28 名称行对账不变）。三轮反馈（外链点了不跳）：外链一律 `target="_blank"` 新标签打开（file:// 同标签导航可能被浏览器策略拦截，且会丢面板状态），并补齐 qqbot 来源链接。四轮反馈（提示词模块无实用性）：每条 prompt 增加「复制」按钮，复制 README 约定的分隔线以下复制区正文，clipboard API + execCommand 双通道。五轮反馈（复制按钮无生效）：按 diagnosing-bugs 纪律建 Node shim 回路（`.scratch/cp-loop.js`，可重跑），初版回路三模式 GREEN 误判逻辑无罪——后经用户复测三态反馈（已复制✓/粘贴为空）钉死根因：**`<template>.textContent` 恒为空**（子节点在 `.content` DocumentFragment 里），`writeText('')` 合法 resolve → 按钮如实报成功但剪贴板为空。修复：正文改从 `template.content.textContent` 取（含退化路径）。升级 shim 复现真实 template 语义后，旧代码 RED 复现用户精确症状、新代码三模式 GREEN，红→绿闭环。同时保留上轮加固：QI_COPY 独立全局函数 + onclick 直绑、fallback 补 focus()、`window.onerror` 错误横幅。视觉自查受限：Edge 无头截图被环境 Crashpad ACL 拦截（三变体均失败），视觉验收靠用户亲眼确认。
 - **修正过期事实**：prompts 实为 9 条且已由用户陆续提交（此前记录"空库起步"过期，下方当前状态已更新）。
 
+## 2026-11-28 · 收录 zcode-tempo（ZCode 桌面插件，plugins/ 首个非 DSH 插件）
+
+- **来源**：用户自研的 ZCode 桌面端扩展（生成速率显示、三击空格草稿增强、空框采纳下一条消息预测），独立仓库 https://github.com/Childho/zcode-tempo ，当前支持 Windows ZCode 4.0.0，自带 Python 安装器（改 app.asar）。用户直接点名收录，未走 grilling（沿用既定约定：自研认可后源码入 `plugins/`）。
+- **落地**：以母本仓库 HEAD（6f7cb5a，与 origin/main 同步）`git archive` 解包入 `plugins/zcode-tempo/`——33 文件清单与 `git ls-files` 一致、5 个关键文件 SHA256 逐一相符、全部 LF（安装器按运行文件字节计算版本）；未发布的未跟踪研究草稿不归档。`build-dashboard.py` 兼容无 package.json 的独立插件包（README H1 + 标题后首段作简介，DSH 插件路径不变）。SETUP.md 第 5 步拆 5.1（DSH）/ 5.2（ZCode 桌面，侵入式安装须先向用户确认）、自检第 6 项改「插件」、月度流程第 3 步放开非 DSH 环境限制、《插件同步流程》新增第 3 步（独立仓库插件从其 GitHub 母本 `git archive` 覆盖，保持 LF）。README 结构图与维护规则同步。
+- **内嵌第三方**：`src/vendor/byte-rax-1.5.23/` 为上游 ByteRax ZCodeBox v1.5.23 的 MIT 代码（LICENSE 随代码保留，插件 README 已声明），属自研源码组成部分，不另记进货单。
+- **验证边界**：未从 Qi 归档目录实际执行 `install.py`（侵入式操作须用户确认并完全退出 ZCode）；安装器可安装性由「与已发布仓库逐字节一致」传递，装机表验列入 todo。
+
 ## 当前状态
 
+- 2026-11-28：`plugins/` 收录首个非 DSH 插件 zcode-tempo（归档其 GitHub 发布版）；dashboard 生成器兼容独立插件包。
 - 2026-11-24：重做资产面板。首屏汇总仓库资产并展示分布，清单支持宽窄屏阅读和吸顶跳转。修复直接访问章节链接仍处于折叠状态、折叠内容仍可被键盘聚焦的问题。
 - 2026-11-24：浏览器本地文件模式验收通过。覆盖 320–1440 像素布局、明暗模式、键盘跳转、折叠记忆、无网络及禁用脚本阅读。复制的主路径、回退及失败提示通过浏览器拦截核对，系统剪贴板未写入。此前的 `.scratch/cp-loop.js` 对应旧版复制实现。
 

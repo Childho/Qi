@@ -24,6 +24,12 @@
 8. 同步信号：各 profile `package.json` 的 `dsh.profile.bundles` 数组（忽略 `@deepseek-ai/` 内置）；
 9. 首批收录：karlo-calm（源码）+ dsh-qqbot@0.5.5（清单）。
 
+## 插件模块扩展决策（2026-11-28 定，用户直接点名，未走 grilling）
+
+1. `plugins/` 从「仅 DSH 插件包」扩展为「DSH 插件包 + 独立仓库插件」：无 package.json、自带安装器的桌面端插件也可收录，「目录即收录清单」不变；
+2. 首个独立仓库插件：zcode-tempo（https://github.com/Childho/zcode-tempo ，ZCode 桌面测速 + 三击草稿增强 + 下一条消息预测），归档其发布仓库 HEAD，不用 submodule；
+3. 独立仓库插件的回流母本 = 其 GitHub 发布仓库（`git archive` 覆盖、保持 LF，不走 DSH profile 遍历），落点：SETUP.md《插件同步流程》第 3 步、安装第 5.2 节；安装属侵入式修改（app.asar），执行前须向用户确认。
+
 ## 提示词模块决策（2026-11-21 定，grilling 三轮 12 问）
 
 1. 定位**纯复用工具箱**：只收正在用的，不常用即删（删除=删文件）；不为学习拆解/永久归档/分享设计；
@@ -54,7 +60,7 @@
 
 - [ ] **新机器表验**：换机时首次按 SETUP.md 走一遍，暴露说明书盲区并回写修正。
 - [ ] **插件同步流程首跑观察**：首次（手动或月度触发）执行《插件同步流程》后，检查 profile 遍历、link 母本定位、PR 流程是否顺畅。
-- [ ] **插件装机表验**：换机时按 SETUP.md 第 5 步从 `plugins/` 目录 `install_bundle`，验证 karlo-calm 在新 profile 上可用（本次未实际从 Qi 目录重装，装的是开发母本 link）。
+- [ ] **插件装机表验**：换机时按 SETUP.md 第 5 步从 `plugins/` 目录 `install_bundle`，验证 karlo-calm 在新 profile 上可用（本次未实际从 Qi 目录重装，装的是开发母本 link）；另按第 5.2 节从 `plugins/zcode-tempo/` 归档目录走一遍 `install.py install`（尚未从 Qi 归档安装过）。
 - [ ] **月度更新首跑观察**：首次定时任务触发后，检查 PR 流程是否顺畅（尤其非 gh 环境的手动开 PR 退化路径）。
 - [ ] **首次月度定时任务尚未建立**：需在本机（Qi 仓库所在 workspace）按 SETUP.md 第 5 步建每月自动化。
 - [ ] **自有 skill 收录**：`skills/` 目前为空，用户未来自己写的/深度改造的 skill 放这里。

@@ -10,8 +10,9 @@
   2. third-party.md     按 `## 节` 分组（跳过"收录规则"）；表格行第一列是名称，
                         可能是 `a` / `b` 反引号多列（拆成多条）；节内独立
                         "来源：" 行作为节级来源；列数不固定，最后列视为用途
-  3. plugins/           目录即清单（排除 third-party.md）；package.json 取
-                        版本与 dsh.compatibility，简介取 locale/zh.json meta.description
+  3. plugins/           目录即清单（排除 third-party.md）；有 package.json 的 DSH 插件
+                        取版本与 dsh.compatibility，简介取 locale/zh.json meta.description；
+                        无 package.json 的独立插件包取 README 的 H1 名称与标题后首段
   4. plugins/third-party.md  固定 5 列：插件|版本|来源|已验证 DSH 版本|用途
   5. prompts/           一条一文件（排除 README.md）；头部 H1=标题，> 用途：，> 来源：
   6. mcp/mcp.template.json   mcp.servers；env 值中 "<本地填写" 计为待填密钥
@@ -165,26 +166,43 @@ def collect_third_party_skills() -> tuple[list[dict], datetime | None]:
     return sections, git_last_commit("third-party.md")
 
 
+def read_readme_summary(d: Path) -> tuple[str, str]:
+    """无 package.json 的独立插件包：README 的 H1 作名称、标题后首段作简介。"""
+    lines = read_text(d / "README.md").splitlines()
+    name = next((l[2:].strip() for l in lines if l.startswith("# ")), d.name)
+    desc, seen_title = "", False
+    for l in lines:
+        s = l.strip()
+        if not seen_title:
+            seen_title = s.startswith("# ")
+        elif s and not s.startswith(("#", ">", "|", "```")):
+            desc = s
+            break
+    return name, desc
+
+
 def collect_own_plugins() -> tuple[list[dict], datetime | None]:
     items, latest = [], None
     base = REPO / "plugins"
     for d in sorted(base.iterdir()) if base.is_dir() else []:
         if not d.is_dir():
             continue
-        pkg = json.loads(read_text(d / "package.json") or "{}")
-        dsh = pkg.get("dsh", {})
-        verified = ", ".join(dsh.get("compatibility", {}).get("dshReleases", {}).keys())
-        desc = ""
-        for loc in ("zh", "en"):
-            meta = json.loads(read_text(d / "locale" / f"{loc}.json") or "{}").get("meta", {})
-            desc = desc or meta.get("description", "")
+        pkg_text = read_text(d / "package.json")
+        if pkg_text:  # DSH 插件包：package.json + locale 提供版本与简介
+            pkg = json.loads(pkg_text)
+            dsh = pkg.get("dsh", {})
+            verified = ", ".join(dsh.get("compatibility", {}).get("dshReleases", {}).keys())
+            desc = ""
+            for loc in ("zh", "en"):
+                meta = json.loads(read_text(d / "locale" / f"{loc}.json") or "{}").get("meta", {})
+                desc = desc or meta.get("description", "")
+            name, meta_str = (pkg.get("name", d.name),
+                              f"v{pkg.get('version', '?')}" + (f" · 已验证 DSH {verified}" if verified else ""))
+        else:  # 独立插件包（如 ZCode 桌面插件，无 package.json）：README 取名称与首段简介
+            name, desc = read_readme_summary(d)
+            meta_str = "独立插件包"
         t = git_last_commit(f"plugins/{d.name}")
-        items.append({
-            "name": pkg.get("name", d.name),
-            "desc": desc,
-            "meta": f"v{pkg.get('version', '?')}" + (f" · 已验证 DSH {verified}" if verified else ""),
-            "when": t,
-        })
+        items.append({"name": name, "desc": desc, "meta": meta_str, "when": t})
         latest = max(latest, t) if latest and t else (t or latest)
     return items, latest
 

@@ -38,15 +38,32 @@
 - 模板中 `<本地填写：…>` 占位符：向用户索取对应密钥/路径后写入**本机**配置；输出目录选本机合理位置。
 - 依赖前置：`uvx`（uv 工具）与 `npx`（Node.js）需可用；缺失时提示用户安装，或改用等效调用方式。
 
-## 第 5 步：安装 DSH 插件（仅 DeepSeek Harness）
+## 第 5 步：安装插件（按所在环境执行对应小节；不匹配的小节跳过，不算安装失败）
 
-本节**仅当你运行在 DeepSeek Harness（DSH）上时执行**。判断依据：你会话中拥有 `plugin_manager` 工具，或用户确认所用 harness 是 DSH。非 DSH 环境直接跳过本节，**不算安装失败**。
+### 5.1 DSH 插件（仅 DeepSeek Harness）
+
+本节**仅当你运行在 DeepSeek Harness（DSH）上时执行**。判断依据：你会话中拥有 `plugin_manager` 工具，或用户确认所用 harness 是 DSH。
 
 - **自研插件**：`plugins/` 下每个子目录是一个完整插件包（`package.json` + `cordis.patch.yml` + 源码），目录即收录清单。对每个子目录执行 `plugin_manager` `action: install_bundle`，`target` 传该目录的**绝对路径**。若你没有该工具：指引人在 UI **Plugins > Add plugin** 中选择本地目录完成安装。
 - **第三方插件**：按 `plugins/third-party.md` 逐条以 `包名@版本` 执行 `install_bundle`（如 `@tencent-connect/dsh-qqbot@0.5.5`）。
 - 安装是 profile 级持久操作，重复安装即更新，天然幂等。
 - 插件运行配置若含密钥（如 qqbot 的 appId/secret）：密钥只写入**本机** profile 配置，向用户索取后回填，绝不写入本仓库。
 - 装完在**新会话**核对插件启用状态与清单版本；对照插件 `package.json` 的 `dsh.compatibility.dshReleases` 与本机 DSH 版本，未验证过的组合要提示用户。
+
+### 5.2 ZCode 桌面插件（仅 Windows + ZCode 桌面客户端）
+
+本节**仅当本机装有 ZCode 桌面客户端时执行**。目前收录：`plugins/zcode-tempo/`（生成速率显示、三击空格草稿增强、空框采纳下一条消息预测；支持范围见其 README）。
+
+- zcode-tempo 不是 DSH 插件包：它自带 Python 安装器，通过向 ZCode 桌面入口 `app.asar` 写入加载语句生效，属**侵入式修改**。执行安装前先向用户确认，并让用户完全退出 ZCode。
+- 安装（需要 Python 3；`<app-dir>` 换成含 `ZCode.exe` 的实际目录）：
+
+  ```powershell
+  python -X utf8 plugins/zcode-tempo/scripts/install.py install --app-dir '<app-dir>'
+  ```
+
+- 幂等与回退：`check` 查看状态、`remove` 卸载（参数同上）；同一安装目录一次只执行一个操作。
+- 若装有上游 ByteRax ZCodeBox 原版状态栏插件，先按其流程卸载（安装器会检查并拦截冲突）。
+- 装完重启 ZCode 生效；客户端升级后先 `check` 确认支持版本，再按需重装。
 
 ## 第 6 步：建立月度更新定时任务
 
@@ -65,14 +82,14 @@
 3. **全局指令**：写入了哪个文件、合并方式；
 4. **MCP**：三个服务器状态、缺哪些密钥；
 5. **定时任务**：是否建立、下次触发时间；
-6. **DSH 插件**：仅 DSH 环境汇报——装了哪些（自研/第三方）、启用状态、待回填哪些密钥；非 DSH 环境写明"跳过"；
+6. **插件**：DSH 环境——装了哪些（自研/第三方）、启用状态、待回填哪些密钥；ZCode 桌面——zcode-tempo 安装状态与所用 `--app-dir`；其他环境写明"跳过"；
 7. **密钥自检**：确认没有任何密钥被写入本仓库目录。
 
 ## 月度更新流程（定时任务触发的就是这一节）
 
 1. 在本仓库目录 `git pull` 更新 main；
 2. 对 `third-party.md` 每条：获取上游最新版本，与本机已安装版本比较；
-3. 执行下文《插件同步流程》一节（DSH 环境必做，非 DSH 环境跳过；与第 2 步互不阻塞）；
+3. 执行下文《插件同步流程》一节（DSH 插件部分仅 DSH 环境必做；独立仓库插件部分不依赖 DSH，任何环境都可做；与第 2 步互不阻塞）；
 4. 有更新时（skills 或插件任一）：
    1. 从 main 切出分支（skills 用 `update/skills-<YYYYMMDD>`，插件用 `update/plugins-<YYYYMMDD>`，同日可并入同一分支）；
    2. 在本机安装更新后的 skills；
@@ -86,17 +103,18 @@
 
 ## 插件同步流程（月度更新第 3 步调用；也可随时手动触发）
 
-手动触发方式：任何机器、任何时间对 AI 说「按 Qi 仓库 `SETUP.md` 的《插件同步流程》执行」。方向是**本机 profile → Qi 仓库**：插件在各项目里开发，Qi 是归档不是母本。
+手动触发方式：任何机器、任何时间对 AI 说「按 Qi 仓库 `SETUP.md` 的《插件同步流程》执行」。方向是**项目侧 → Qi 仓库**：DSH 插件在各项目里开发并装进本机 profile，独立仓库插件发布在自己的 GitHub 仓库；Qi 是归档不是母本。
 
-1. 遍历本机所有 DSH profile 的 `package.json`（`~/.dsh/profiles/*/package.json`），汇总每个 `dsh.profile.bundles` 数组中的显式安装插件（**忽略** `@deepseek-ai/` 开头的内置包，它们随 DSH 发行）。
+1. 遍历本机所有 DSH profile 的 `package.json`（`~/.dsh/profiles/*/package.json`），汇总每个 `dsh.profile.bundles` 数组中的显式安装插件（**忽略** `@deepseek-ai/` 开头的内置包，它们随 DSH 发行）。无 DSH 环境时跳过本步。
 2. 对每个**已收录的自研插件**（`plugins/` 下有对应目录）：
    - 依据 profile `dependencies` 里该包的 `link:` 路径定位开发母本目录；无 `link:` 时以 profile `node_modules` 内实体为准，并在结果中提示用户确认母本位置；
    - 以母本内容**覆盖** Qi 侧目录（项目侧为准，Qi 是最后已知良好归档）；
    - 若 Qi 侧 `version` 高于母本版本：不覆盖，在 PR 中标注冲突，人工裁决。
-3. 遇到 **Qi 未收录的插件**：**不入库**，在 PR/汇报中列出名字、版本与来源路径，待用户人工确认是否收录（防止试验品污染档案）。
-4. **第三方插件**：对照 `plugins/third-party.md` 检查本机安装版本与清单差异、上游是否有新版本；只报告与建议，不擅自升级。
-5. 有任何变更：切分支 `update/plugins-<YYYYMMDD>`，提交、push、开 PR（同《月度更新流程》第 4 步约定）；无变更：汇报"无更新"。
-6. 顺带提醒用户遵守软约束：插件改动顺手升 `version`；在新 DSH 版本上验收后，往插件 `package.json` 的 `dsh.compatibility.dshReleases` 追加一条记录。
+3. **独立仓库插件**（`plugins/` 下无 `package.json` 的目录，如 `plugins/zcode-tempo/`）：母本不是 DSH profile，而是各自的发布仓库（zcode-tempo 为 `github.com/Childho/zcode-tempo`）。取母本最新 main，用 `git archive HEAD | tar -x` 解包**覆盖** Qi 侧目录；不要直接拷贝 Windows 检出的工作区，除非确认行尾仍是 LF（该类安装器按运行文件字节计算版本，行尾变了版本校验就失真）。覆盖后用 git diff 比对，把上游变更摘要写进 PR。
+4. 遇到 **Qi 未收录的插件**：**不入库**，在 PR/汇报中列出名字、版本与来源路径，待用户人工确认是否收录（防止试验品污染档案）。
+5. **第三方插件**：对照 `plugins/third-party.md` 检查本机安装版本与清单差异、上游是否有新版本；只报告与建议，不擅自升级。
+6. 有任何变更：切分支 `update/plugins-<YYYYMMDD>`，提交、push、开 PR（同《月度更新流程》第 4 步约定）；无变更：汇报"无更新"。
+7. 顺带提醒用户遵守软约束（仅 DSH 插件）：插件改动顺手升 `version`；在新 DSH 版本上验收后，往插件 `package.json` 的 `dsh.compatibility.dshReleases` 追加一条记录。
 
 ## 附录：常见 harness 安装位置参考（非权威，以各官方文档为准）
 
