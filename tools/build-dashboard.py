@@ -12,7 +12,8 @@
                         "来源：" 行作为节级来源；列数不固定，最后列视为用途
   3. plugins/           目录即清单（排除 third-party.md）；有 package.json 的 DSH 插件
                         取版本与 dsh.compatibility，简介取 locale/zh.json meta.description；
-                        无 package.json 的独立插件包取 README 的 H1 名称与标题后首段
+                        无 package.json 的独立插件包取 README 的 H1 名称与标题后首段，
+                        母本链接取脚本内 INDEPENDENT_PLUGIN_SOURCES（与 SETUP.md 同源）
   4. plugins/third-party.md  固定 5 列：插件|版本|来源|已验证 DSH 版本|用途
   5. prompts/           一条一文件（排除 README.md）；头部 H1=标题，> 用途：，> 来源：
   6. mcp/mcp.template.json   mcp.servers；env 值中 "<本地填写" 计为待填密钥

@@ -33,7 +33,7 @@
 ## 2026-11-28 · 收录 zcode-tempo（ZCode 桌面插件，plugins/ 首个非 DSH 插件）
 
 - **来源**：用户自研的 ZCode 桌面端扩展（生成速率显示、三击空格草稿增强、空框采纳下一条消息预测），独立仓库 https://github.com/Childho/zcode-tempo ，当前支持 Windows ZCode 4.0.0，自带 Python 安装器（改 app.asar）。用户直接点名收录，未走 grilling（沿用既定约定：自研认可后源码入 `plugins/`）。
-- **落地**：以母本仓库 HEAD（6f7cb5a，与 origin/main 同步）`git archive` 解包入 `plugins/zcode-tempo/`——33 文件清单与 `git ls-files` 一致、5 个关键文件 SHA256 逐一相符、全部 LF（安装器按运行文件字节计算版本）；未发布的未跟踪研究草稿不归档。`build-dashboard.py` 兼容无 package.json 的独立插件包（README H1 + 标题后首段作简介，DSH 插件路径不变）。SETUP.md 第 5 步拆 5.1（DSH）/ 5.2（ZCode 桌面，侵入式安装须先向用户确认）、自检第 6 项改「插件」、月度流程第 3 步放开非 DSH 环境限制、《插件同步流程》新增第 3 步（独立仓库插件从其 GitHub 母本 `git archive` 覆盖，保持 LF）。README 结构图与维护规则同步。
+- **落地**：以母本仓库 HEAD（6f7cb5a，与 origin/main 同步）`git archive` 解包入 `plugins/zcode-tempo/`——33 文件清单与 `git ls-files` 一致、5 个关键文件 SHA256 逐一相符、全部 LF（安装器按运行文件字节计算版本）；未发布的未跟踪研究草稿不归档。`build-dashboard.py` 兼容无 package.json 的独立插件包（README H1 + 标题后首段作简介，DSH 插件路径不变），面板自研插件行附母本链接（生成器内来源表，8f483fd）。SETUP.md 第 5 步拆 5.1（DSH）/ 5.2（ZCode 桌面，侵入式安装须先向用户确认）、自检第 6 项改「插件」、月度流程第 3 步放开非 DSH 环境限制、《插件同步流程》新增第 3 步（独立仓库插件从其 GitHub 母本 `git archive` 覆盖，保持 LF）。README 结构图与维护规则同步。
 - **内嵌第三方**：`src/vendor/byte-rax-1.5.23/` 为上游 ByteRax ZCodeBox v1.5.23 的 MIT 代码（LICENSE 随代码保留，插件 README 已声明），属自研源码组成部分，不另记进货单。
 - **验证边界**：未从 Qi 归档目录实际执行 `install.py`（侵入式操作须用户确认并完全退出 ZCode）；安装器可安装性由「与已发布仓库逐字节一致」传递，装机表验列入 todo。
 
